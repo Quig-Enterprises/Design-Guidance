@@ -1,116 +1,62 @@
-### **Development Strategy: Creating Standalone Code Modules**
+# Standalone Libraries: Creation and Usage
 
-This document outlines the standard strategy for structuring and decoupling features within a WordPress plugin. The goal is to create modular, self-contained components. There are two primary paths to follow, depending on whether the new module is intended for immediate external use by other plugins.
+A core principle of our design strategy is reusability. To facilitate this, we will create and maintain a set of standalone libraries that can be shared across multiple CxQ plugins. This document provides the guidance for creating, versioning, and using these libraries.
 
----
+## 1. What Qualifies as a Library?
 
-#### **Path A: Standalone & Shareable (The "Composer Monorepo" Strategy)**
+Not all reusable code should be a library. A standalone library should be:
 
-**Use this path when you are instructed to make a library "standalone and available for external use."** This prepares the library to be managed by Composer and eventually moved to its own repository.
+*   **Framework Agnostic (when possible):** It should have minimal dependencies on a specific framework like WordPress. If it must be framework-dependent, its purpose should be to abstract a complex framework feature (e.g., a `CxQ_WP_Settings_API_Wrapper`).
+*   **Single Responsibility:** The library should do one thing and do it well (e.g., logging, making API calls, handling data sanitization).
+*   **Well-Defined API:** It must have a clear, public-facing set of methods and properties for interaction. Internal logic should be kept private or protected.
+*   **Independently Versioned:** It must follow our [Revisioning (SemVer)](./REVISIONING.md) guidelines and have its own `CHANGELOG.md`.
 
-**1. Naming Convention:**
+## 2. Library Naming and Structure
 
-*   **Namespace:** All classes within a shareable library must belong to a namespace prefixed with `CxQ\Util\`. For example, a library named "DataLogger" would use the namespace `CxQ\Util\DataLogger`.
-*   **Class Names:** All class names must be prefixed with `CxQ_Util_`. This serves as a global, non-namespaced fallback to guarantee uniqueness. For example: `class CxQ_Util_DataLogger_Admin_Table`.
+*   **Repository Name:** The GitHub repository name should be `kebab-case` and prefixed with `cxq-`.
+    *   *Example:* `cxq-logger`, `cxq-api-client`
 
-**2. Project Structure:**
+*   **PHP Namespace:** All classes within the library must belong to a `CxQ` root namespace, followed by a `PascalCase` version of the library name.
+    *   *Example:* `CxQ\Logger`, `CxQ\ApiClient`
 
-The project will be organized as a monorepo. All shareable libraries must reside within a `packages/` directory.
+*   **File Structure:** Libraries should be structured to be compatible with a PSR-4 autoloader (like the one provided by Composer).
+    ```
+    /cxq-logger/
+    |
+    |-- /src/
+    |   |-- Logger.php          # Contains the CxQ\Logger\Logger class
+    |   `-- LogHandler.php    # Contains the CxQ\Logger\LogHandler class
+    |
+    |-- composer.json         # Defines dependencies and autoloading.
+    |-- README.md             # Explains what the library is and how to use it.
+    `-- CHANGELOG.md          # Follows our revisioning guidelines.
+    ```
 
-```
-/main-plugin/
-|-- /packages/
-|   |-- /new-library-name/
-|   |   |-- /src/
-|   |   |-- composer.json
-|   |   |-- README.md
-|-- /vendor/
-|-- main-plugin.php
-|-- composer.json
-|-- .gitignore
-```
+*   **Status:** Each library must have a defined status indicating its current state of development and availability. The possible statuses are:
+    *   `Standalone`: The library is in its own repository and managed via Composer.
+    *   `Embedded`: The library is currently developed/maintained within a larger plugin.
+    *   `In Development`: The library is being actively built and is not yet stable.
+    *   `Deprecated`: The library is no longer recommended for use and will be removed in the future.
 
-**3. Composer Configuration:**
+## 3. Encapsulation: Namespaces vs. Prefixes
 
-This setup uses Composer's `path` repositories to symlink the local library into the `vendor/` directory, enabling live development.
+**Libraries must use their defined PHP namespace (e.g., `CxQ\Logger`) for all classes. Unlike plugins, libraries should avoid using global function prefixes (e.g., `cxq_logger_`) and should encapsulate all functionality within classes.** This reinforces our Object-Oriented and reusability principles.
 
-*   **Library's `composer.json` (`packages/new-library-name/composer.json`):**
-    *   Define the library's unique name (e.g., `quig-enterprises/cxq-util-data-logger`).
-    *   Define its PSR-4 autoloader configuration according to the namespace convention:
-        ```json
-        "autoload": {
-            "psr-4": {
-                "CxQ\\Util\\DataLogger\\": "src/"
-            }
-        }
-        ```
+## 4. Creating a New Library (The Process)
 
-*   **Main Plugin's `composer.json` (`main-plugin/composer.json`):**
-    *   Add the new library to the `require` section with the `@dev` version constraint.
-    *   Ensure the `repositories` section is configured to scan the `packages/` directory:
-        ```json
-        "repositories": [
-            {
-                "type": "path",
-                "url": "packages/*",
-                "options": {
-                    "symlink": true
-                }
-            }
-        ]
-        ```
+1.  **Identify the Need:** You recognize a piece of functionality that is, or could be, used in more than one plugin.
+2.  **Check the Catalog:** First, you **must** check the [Available Libraries Catalog](./AVAILABLE_LIBRARIES.md) to ensure a similar library doesn't already exist.
+3.  **Propose the Library:** Open an issue in the `Design-Guidance` repository outlining the purpose of the new library, its proposed API, and why it's needed.
+4.  **Approval:** The proposal will be reviewed. Once approved, a new repository will be created under the `Quig-Enterprises` organization.
+5.  **Development:** Build the library following all design guidance (OOP, Naming, Versioning). It must be fully documented with a `README.md`.
+6.  **Add to Catalog:** Once the library is stable (`1.0.0`), add it to the `AVAILABLE_LIBRARIES.md` catalog so others can find and use it.
 
-**4. Workflow:**
+## 5. Using Libraries in a Plugin
 
-1.  After creating the files, run `composer install` in the main plugin's root.
-2.  Develop the library's code directly within its `packages/new-library-name/` directory, adhering to the naming conventions.
-3.  The main plugin must include the `vendor/autoload.php` file and can then use the library's classes.
-4.  **Crucially, create a detailed `README.md`** with full integration instructions for the library, as it is intended for external use.
+We will use **Composer** as the standard dependency manager for including libraries in our plugins.
 
----
+*   Each plugin that consumes a library will have its own `composer.json` file.
+*   The library will be listed as a requirement.
+*   The `/vendor` directory (containing the library code) will be included in the plugin's final `.zip` file.
 
-#### **Path B: Standalone & Private (The "Internal Module" Strategy)**
-
-**Use this path when you are instructed to make a library "standalone but NOT available for external use (yet)."** This approach prioritizes code organization without the overhead of Composer dependency management for that specific module.
-
-**1. Naming Convention:**
-
-*   **Namespace:** All classes within a private module must belong to the main plugin's primary namespace.
-*   **Class Names:** All class names must share the same unique prefix as the rest of the host plugin. The format is `CxQ_XXXX_`, where `XXXX` is a unique identifier for the host plugin (e.g., `CxQ_Membership_`). For example, a private module for handling imports within the "Membership" plugin would have a class named `CxQ_Membership_Import_Manager`.
-
-**2. Project Structure:**
-
-The module is still placed in its own directory for separation, but it is treated as a simple part of the main plugin.
-
-```
-/main-plugin/
-|-- /includes/
-|   |-- /modules/
-|   |   |-- /new-module-name/
-|   |   |   |-- /src/
-|   |   |   |-- new-module-name.php  (The main loader file)
-|-- main-plugin.php
-|-- composer.json
-```
-
-**3. Autoloading Configuration:**
-
-Instead of a `path` repository, you will add the module's directory directly to the main plugin's `composer.json` autoload section.
-
-*   **Main Plugin's `composer.json` (`main-plugin/composer.json`):**
-    *   Add a new PSR-4 namespace for the internal module, nested under the main plugin's namespace.
-        ```json
-        "autoload": {
-            "psr-4": {
-                "CxQ\\Membership\\": "includes/",
-                "CxQ\\Membership\\Modules\\NewModuleName\\": "includes/modules/new-module-name/src/"
-            }
-        }
-        ```
-    *   After updating the `composer.json`, run `composer dump-autoload` to regenerate the autoloader.
-
-**4. Workflow:**
-
-1.  The main plugin file (`main-plugin.php`) is responsible for including the module's main loader file (`includes/modules/new-module-name/new-module-name.php`).
-2.  This loader file is responsible for instantiating the module's classes.
-3.  Since this module is not intended for external use, it does not need its own `composer.json` or a public-facing `README.md` with integration instructions. Its use is entirely controlled by the main plugin.
+This approach ensures that each plugin gets the correct version of a library and avoids conflicts.
