@@ -1,4 +1,4 @@
-# Available Libraries
+# Available Libraries Catalog
 
 This document serves as a catalog of shared, standalone libraries available for use across all CxQ plugins. Utilizing these pre-approved libraries helps to reduce code duplication, improve stability, and accelerate development.
 
@@ -6,34 +6,11 @@ This document serves as a catalog of shared, standalone libraries available for 
 
 ## How to Use a Library
 
-Each library listed below includes instructions for installation (e.g., via Composer) and usage. All libraries follow our established [Revisioning](./REVISIONING.md) and [Naming Convention](./NAMING_CONVENTIONS.md) guidelines.
+Each library listed below includes its Composer name for easy installation. All libraries follow our established [Revisioning](./REVISIONING.md) and [Naming Convention](./NAMING_CONVENTIONS.md) guidelines. To use one, require it in your plugin's `composer.json` and run `composer install`.
 
 ---
 
 ## Library Catalog
-
-*(This section will be populated as libraries are created and approved.)*
-
-### Example Library Entry:
-
-*   **Library Name:** `cxq-logger`
-*   **Version:** `1.2.0`
-*   **Owner:** `@maintainer-github-handle`
-*   **Description:** A standardized logging utility for writing events to the database and/or flat files. Supports different log levels (INFO, WARNING, ERROR).
-*   **Repository:** `https://github.com/Quig-Enterprises/cxq-logger`
-*   **Usage:**
-    ```php
-    // Include the autoloader
-    require_once 'path/to/vendor/autoload.php';
-
-    // Instantiate the logger
-    $logger = new \CxQ\Logger\DatabaseLogger( );
-
-    // Log a message
-    $logger->log( 'User logged in successfully.', 'INFO', ['user_id' => 123] );
-    ```
-
----
 
 ### CxQ Data Logger
 
@@ -45,6 +22,7 @@ Each library listed below includes instructions for installation (e.g., via Comp
     *   For each registered log type, it automatically generates a searchable, sortable, and filterable admin screen.
     *   Provides a simple, static `log()` method for writing events with contextual data stored as JSON.
 *   **Use Case:** Ideal for auditing, debugging, or tracking any type of event within a plugin, such as API calls, user actions, or system errors.
+*   **Note:** This library is currently being developed and maintained within the CxQ Membership Plugin.
 
 ### CxQ Credential Manager
 
@@ -57,6 +35,7 @@ Each library listed below includes instructions for installation (e.g., via Comp
     *   Features a pluggable architecture (`iCxQ_Verifier` interface) to allow for future automated verification methods (e.g., OCR).
     *   Provides front-end shortcodes for user upload forms and credential lists.
 *   **Use Case:** Perfect for any site that needs to track and verify user qualifications, licenses, or certifications.
+*   **Note:** This library is currently being developed and maintained within the CxQ Membership Plugin.
 
 ### CxQ Notification Engine
 
@@ -68,6 +47,7 @@ Each library listed below includes instructions for installation (e.g., via Comp
     *   Manages its own WP-Cron jobs for daily, weekly, or monthly rule evaluation.
     *   Includes a "Dry Run" mode for testing rules without sending emails and a logging system (which uses the `CxQ Data Logger`) for auditing.
 *   **Use Case:** Ideal for sending expiration reminders, pre-event notifications, subscription warnings, or any other date-based automated communication.
+*   **Note:** This library is currently being developed and maintained within the CxQ Membership Plugin.
 
 ### CxQ Workflow Engine
 
@@ -79,3 +59,6 @@ Each library listed below includes instructions for installation (e.g., via Comp
     *   Can automatically change a post author's WordPress user role when the post reaches a specific status.
     *   Fires custom action hooks at each stage (`cxq_workflow_status_changed_{post_type}_{new_status}`), allowing for deep integration with the host plugin's business logic.
 *   **Use Case:** Perfect for managing any multi-step process, such as candidate onboarding, article publishing pipelines, project management, or order fulfillment.
+*   **Note:** This library is currently being developed and maintained within the CxQ Membership Plugin.
+
+---
