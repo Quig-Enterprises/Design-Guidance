@@ -1,4 +1,3 @@
-```markdown
 # Output Structure for WordPress Plugins
 
 To ensure our WordPress plugins are easy to install, distribute, and maintain, they must be packaged in a specific way. The standard is to create a single `.zip` file that can be uploaded directly through the WordPress admin dashboard (`Plugins > Add New > Upload Plugin`).
@@ -57,6 +56,7 @@ A well-organized folder structure is essential for keeping your plugin's files m
 |
 `-- /vendor/                # Composer dependencies (if any).
 ```
+**Note on `README.txt`:** The `README.txt` file, if created for WordPress.org compatibility, should also list `Quig Enterprises` as the author/contributor to maintain consistency with the main plugin header.
 
 ## 3. The Main Plugin File (`plugin-slug.php`)
 
@@ -70,8 +70,8 @@ This is the entry point for your plugin. It must contain the standard WordPress 
  * Plugin URI:        https://github.com/Quig-Enterprises/cxq-my-awesome-plugin
  * Description:       A brief and clear description of what this plugin does.
  * Version:           1.0.0
- * Author:            Your Name or Quig Enterprises
- * Author URI:        https://github.com/Quig-Enterprises
+ * Author:            Quig Enterprises
+ * Author URI:        https://quigs.com
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       cxq-my-awesome-plugin
@@ -79,7 +79,7 @@ This is the entry point for your plugin. It must contain the standard WordPress 
  */
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
+if ( ! defined( 'WPINC'  ) ) {
     die;
 }
 
@@ -118,7 +118,7 @@ This file is used to clean up any data your plugin has created **when a user del
  */
 
 // If uninstall not called from WordPress, then exit.
-if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+if ( ! defined( 'WP_UNINSTALL_PLUGIN'  ) ) {
     exit;
 }
 
@@ -128,5 +128,4 @@ delete_option( 'cxq_my_awesome_plugin_settings' );
 // Example: Drop a custom database table.
 global $wpdb;
 $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}cxq_custom_data" );
-```
 ```
