@@ -129,3 +129,48 @@ delete_option( 'cxq_my_awesome_plugin_settings' );
 global $wpdb;
 $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}cxq_custom_data" );
 ```
+
+## 5. Packaging and Distribution Rules
+
+This section outlines the final rules for creating the distributable `.zip` file for a plugin. Adhering to these rules ensures that every plugin we deliver is professional, versioned correctly, and error-free upon installation.
+
+### 5.1. Zip File Naming Convention
+
+When generating the final `.zip` file, the filename **must** include a version number that corresponds to the version in the plugin's header and changelog.
+
+*   **Correct Format:** `plugin-slug-MAJOR.MINOR.PATCH.zip`
+    *   *Example:* `cxq-auditor-1.0.0.zip`
+    *   *Example:* `cxq-membership-2.1.3.zip`
+
+*   **Incorrect Formats:** Do not use descriptive or non-standard suffixes.
+    *   *Avoid:* `cxq-auditor-latest.zip`
+    *   *Avoid:* `cxq-auditor-debug-fix.zip`
+
+This practice ensures that every distributed file is a unique, identifiable artifact tied to a specific release.
+
+### 5.2. Pre-Packaging Verification Checklist
+
+Before generating the `.zip` file, you **must** verify that the plugin is in a runnable state. A plugin distributed in a zip file must activate and run without generating fatal PHP errors.
+
+*   **Ensure All Files Exist:** Every file that is referenced via `require`, `include`, `require_once`, or `include_once` must exist in the packaged directory. If a file is under development, it must exist as a placeholder with proper PHP comments explaining its purpose.
+
+*   **Ensure All Functions/Methods Exist:** Every function or class method that is called must be defined. If a function's logic is not yet complete, it must exist as a valid placeholder to prevent "Call to undefined function/method" errors.
+
+    ```php
+    <?php
+    /**
+     * Processes the uploaded data.
+     *
+     * @todo Implement the full logic for data processing in a future iteration.
+     * @return bool Always returns true for now.
+     */
+    function cxq_auditor_process_data( $data ) {
+        // Placeholder: Full logic to be implemented later.
+        // For now, we return true to prevent fatal errors in the call stack.
+        return true;
+    }
+    ```
+
+*   **Syntax Check:** The entire plugin codebase must be free of PHP syntax errors.
+
+Following this checklist guarantees a professional user experience and prevents site-breaking errors upon plugin activation.
