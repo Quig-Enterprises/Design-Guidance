@@ -136,17 +136,20 @@ This section outlines the final rules for creating the distributable `.zip` file
 
 ### 5.1. Zip File Naming Convention
 
-When generating the final `.zip` file, the filename **must** include a version number that corresponds to the version in the plugin's header and changelog.
+When generating the final distributable `.zip` file, the filename **must** be appended with the plugin's version number.
 
-*   **Correct Format:** `plugin-slug-MAJOR.MINOR.PATCH.zip`
+*   **Zip Filename Format:** `plugin-slug-MAJOR.MINOR.PATCH.zip`
     *   *Example:* `cxq-auditor-1.0.0.zip`
     *   *Example:* `cxq-membership-2.1.3.zip`
 
-*   **Incorrect Formats:** Do not use descriptive or non-standard suffixes.
-    *   *Avoid:* `cxq-auditor-latest.zip`
-    *   *Avoid:* `cxq-auditor-debug-fix.zip`
+*   **Internal Folder Name:** The root folder inside the zip file **must not** include the version number. It should always match the plugin's slug.
+    *   *Example:* The file `cxq-auditor-1.0.0.zip` must unzip to a single folder named `cxq-auditor`.
 
-This practice ensures that every distributed file is a unique, identifiable artifact tied to a specific release.
+*   **Prohibited Suffixes:** Do not use any other descriptive suffixes in the filename. The version number is the only permitted addition.
+    *   *Avoid:* `cxq-auditor-updated.zip`
+    *   *Avoid:* `cxq-auditor-complete.zip`
+
+This practice ensures that every distributed file is a unique, versioned artifact that installs cleanly into the correct directory (`/wp-content/plugins/plugin-slug/`).
 
 ### 5.2. Pre-Packaging Verification Checklist
 

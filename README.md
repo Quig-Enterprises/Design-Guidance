@@ -1,6 +1,6 @@
 # Manus AI Development Guidance: Best Practices for Building CxQ Plugins
 
-**Design Guidance Version:** 1.1.0
+**Design Guidance Version:** 1.2.0
 
 Welcome to the central design guidance for all Manus AI chat sessions at CxQ. This repository contains a unified set of best practices for developing high-quality, consistent, and maintainable software.
 
@@ -24,5 +24,6 @@ The following documents provide detailed instructions on specific aspects of our
 *   **[Naming Conventions](./NAMING_CONVENTIONS.md):** Rules for naming plugins, prefixes, variables, functions, and other code elements across different languages.
 *   **[Output Structure for WordPress Plugins](./WORDPRESS_OUTPUT_STRUCTURE.md):** Guidelines for packaging WordPress plugins for easy installation and distribution.
 *   **[Revisioning (Versioning)](./REVISIONING.md):** Our approach to software versioning using Semantic Versioning (SemVer).
-*   **[Standalone Libraries](./STANDALONE_LIBRARIES.md):** Guidance on creating, using, and contributing to shared, reusable libraries.
-*   **[Available Libraries Catalog](./AVAILABLE_LIBRARIES.md):** A catalog of shared, reusable libraries available for use across all CxQ plugins.
+*   **[Standalone Libraries](./STANDALONE_LIBRARIES.md):** Guidance on creating, using, and contributing to the shared libraries within the `cxq-libs` monorepo.
+
+For a complete list and description of all available libraries, please see the `README.md` file in the **`cxq-libs`** repository.
